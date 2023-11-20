@@ -1,13 +1,28 @@
 import React__default, { useState, useEffect } from 'react';
 
-const loadedScripts = {};
-const src = 'https://js.poolerapp.com/v1/inline.js';
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+
+var loadedScripts = {};
+var src = 'https://js.poolerapp.com/v1/inline.js';
 function usePoolerScript() {
-  const [state, setState] = useState({
-    loaded: false,
-    error: false
-  });
-  useEffect(() => {
+  var _React$useState = useState({
+      loaded: false,
+      error: false
+    }),
+    state = _React$useState[0],
+    setState = _React$useState[1];
+  useEffect(function () {
     if (loadedScripts !== null && loadedScripts !== void 0 && loadedScripts.hasOwnProperty(src)) {
       setState({
         loaded: true,
@@ -15,16 +30,16 @@ function usePoolerScript() {
       });
     } else {
       loadedScripts.src = src;
-      const script = document.createElement('script');
+      var script = document.createElement('script');
       script.src = src;
       script.async = true;
-      const onScriptLoad = () => {
+      var onScriptLoad = function onScriptLoad() {
         setState({
           loaded: true,
           error: false
         });
       };
-      const onScriptError = () => {
+      var onScriptError = function onScriptError() {
         delete loadedScripts.src;
         setState({
           loaded: true,
@@ -35,7 +50,7 @@ function usePoolerScript() {
       script.addEventListener('complete', onScriptLoad);
       script.addEventListener('error', onScriptError);
       document.body.appendChild(script);
-      return () => {
+      return function () {
         script.removeEventListener('load', onScriptLoad);
         script.removeEventListener('error', onScriptError);
       };
@@ -45,15 +60,17 @@ function usePoolerScript() {
 }
 
 function usePooler(poolerConfig) {
-  const [loaded, error] = usePoolerScript();
-  React__default.useEffect(() => {
+  var _usePoolerScript = usePoolerScript(),
+    loaded = _usePoolerScript[0],
+    error = _usePoolerScript[1];
+  React__default.useEffect(function () {
     if (error) throw new Error('Unable to initialise Pooler SDK');
   }, [error]);
-  const handlePoolerSend = () => {
+  var handlePoolerSend = function handlePoolerSend() {
     if (error) throw new Error('Unable to initialise Pooler SDK');
     if (loaded) {
       var _window;
-      const config = {
+      var config = {
         amount: poolerConfig === null || poolerConfig === void 0 ? void 0 : poolerConfig.amount,
         callback: poolerConfig === null || poolerConfig === void 0 ? void 0 : poolerConfig.callback,
         email: poolerConfig === null || poolerConfig === void 0 ? void 0 : poolerConfig.email,
@@ -63,23 +80,21 @@ function usePooler(poolerConfig) {
         error_message: poolerConfig === null || poolerConfig === void 0 ? void 0 : poolerConfig.error_message,
         onClose: poolerConfig === null || poolerConfig === void 0 ? void 0 : poolerConfig.onClose
       };
-      const Pooler = (_window = window) === null || _window === void 0 ? void 0 : _window.Pooler;
+      var Pooler = (_window = window) === null || _window === void 0 ? void 0 : _window.Pooler;
       return Pooler.Popup(config);
     }
   };
   return handlePoolerSend;
 }
 
-function poolerButton({
-  children,
-  className,
-  disabled,
-  loading,
-  ...rest
-}) {
-  const {
-    handlePoolerSend
-  } = usePooler(rest);
+var _excluded = ["children", "className", "disabled", "loading"];
+function poolerButton(_ref) {
+  var children = _ref.children,
+    className = _ref.className,
+    disabled = _ref.disabled,
+    rest = _objectWithoutPropertiesLoose(_ref, _excluded);
+  var _usePooler = usePooler(rest),
+    handlePoolerSend = _usePooler.handlePoolerSend;
   return React__default.createElement("button", {
     disabled: disabled,
     className: className || 'pooler-button ',
